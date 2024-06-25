@@ -76,6 +76,49 @@ app.post('/signup', async (req, res) => {
 
 })
 
+app.post('/login', async (req, res) => {
+   const {username, password} = req.body;
+
+   if (!username || !password ) {
+      return res.status(400).json({ error: 'Username and password are required.' });
+   }
+
+   try {
+
+      const { data: user, error: userError } = await supabase
+      .from('users')
+      .select('id, username, password_hash')
+      .eq('username', username)
+      .single();
+
+      if (userError) {
+         console.error('Error checking user existence:', userError);
+         return res.status(500).json({ error: 'Error checking user existence.' });
+      }
+
+      if (!user) {
+         return res.status(400).json({error: 'Invalid username or password.' });
+      }
+
+      const isPasswordValid = await bcrypt.compare(password, user.password_hash);
+
+      if (!isPasswordValid) {
+         return res.status(400).json({ error: 'Invalid username or password.' });
+      }
+
+      const token = jwt.sign({ userId: user.id}, JWT_Secret, { expiresIn: '1h'});
+
+      return res.status(200).json({
+         user: { id: user.id, username: user.username},
+         token,
+      })
+
+   } catch (error) {
+       console.error('Unexpected error occurred:', error);
+       return res.status(500).json({ error: 'Unexpected error occurred.' });
+   }
+});
+
 
 
 
