@@ -9,7 +9,7 @@ async function testConnection() {
     let { data, error } = await supabase.from('users').select();
 
     if (error) {
-        console.log('Errro connecting to Supabase', error.message);
+        console.log('Error connecting to Supabase', error.message);
     } else {
         console.log('Successfully connected to Supabase');
     }
