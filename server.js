@@ -119,6 +119,47 @@ app.post('/login', async (req, res) => {
    }
 });
 
+const verifyToken = (req, res, next) => {
+   const token = req.header('Authorization').replace('Bearer ', '');
+   if (!token) {
+      return res.status(401).send({ error: 'Access denied. No token provided.' });
+   }
+
+   try {
+      const decoded = jwt.verify(token, JWT_Secret);
+      req.user = decoded;
+      next();
+   } catch (ex) {
+      res.status(400).send({ error: 'Invalid token.' });
+   }
+};
+
+app.post('/logout', verifyToken, (req, res) => {
+   res.status(200).send({ message: 'Logged out successfully' });
+})
+
+app.get('/user', verifyToken, async (req, res) => {
+     const userId = req.user.userId;
+
+     try {
+         const { data: user, error } = await supabase
+             .from('users')
+             .select('id', 'username')
+             .eq('id', userId)
+             .single();
+         
+         if (error) {
+            console.error('Error fetching user:', error);
+            return res.status(500).json({ error: 'Error fetching user data.' });
+         }
+
+         res.json({ user })
+     } catch (error) {
+         console.error('Unexpected error occurred:', error);
+         res.status(500).json({ error: 'Unexpected error occurred.' });
+     }
+})
+
 
 
 

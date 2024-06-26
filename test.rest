@@ -16,3 +16,12 @@ Content-Type: application/json
     "username": "user527",
     "password": "user527"
 }
+
+###
+POST http://localhost:5000/logout
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI3YTQyNGYxZS1mYjQ4LTQ4ZTMtOWI0ZC05MmNkMTZkNmEwNjUiLCJpYXQiOjE3MTkzNTUwNTgsImV4cCI6MTcxOTM1ODY1OH0.P82NjaO4q7aTaitOzw-zgq1DwcF034CJ5LP8rlcaTr0
+Content-Type: application/json
+
+###
+GET http://localhost:5000/user
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI3YTQyNGYxZS1mYjQ4LTQ4ZTMtOWI0ZC05MmNkMTZkNmEwNjUiLCJpYXQiOjE3MTk0Mzk1MTAsImV4cCI6MTcxOTQ0MzExMH0.XotpiUcbl-b7B20nbe7v2oWEuqdNlyM_yPj-X0n2Tmc
