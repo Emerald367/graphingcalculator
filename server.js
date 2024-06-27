@@ -160,6 +160,28 @@ app.get('/user', verifyToken, async (req, res) => {
      }
 })
 
+app.get('/users', verifyToken, async (req, res) => {
+     const userId = req.user.userId;
+
+     try {
+         const {data: user, error} = await supabase
+             .from('users')
+             .select('id, username, created_at')
+             .eq('id', userId)
+             .single();
+
+      
+         if (error) {
+            console.error('Error fetching user profile:', error);
+            return res.status(500).json({ error: 'Error fetching user profile.' });
+         }
+
+         res.json({ user });
+     } catch (error) {
+         console.error('Unexpected error occurred:', error);
+         res.status(500).json({ error: 'Unexpected error occurred.' });
+     }
+});
 
 
 
