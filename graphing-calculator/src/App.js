@@ -1,28 +1,49 @@
-import React from 'react';
-import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom';
-import SignUpForm from './SignUpForm';
+import React, {useState} from 'react';
+import { BrowserRouter as Router, Route, Routes, Navigate, Link } from 'react-router-dom';
 import LoginForm from './LoginForm';
+import UserProfile from './UserProfile';
 
 function App() {
+  const [isAuthenticated, setIsAuthenticated] = useState(!!localStorage.getItem('token'));
+
+  const handleLogin = () => {
+    setIsAuthenticated(true);
+  };
+
+  const handleLogout = () => {
+    setIsAuthenticated(false);
+  };
+   
   return (
     <Router>
-    <div className="App">
       <nav className="bg-green-600 p-4">
-        <ul className="flex space-x-4 justify-center">
-          <li>
-            <Link to="/login" className="text-white">Login</Link>
-          </li>
-          <li>
-            <Link to="/signup" className="text-white">Sign Up</Link>
-          </li>
+        <ul className="flex justify-end">
+          {isAuthenticated ? (
+            <>
+              <li className="mr-6">
+                <Link to="/profile" className="text-white hover:text-gray-200">Profile</Link>
+              </li>
+              <li>
+                <button onClick={handleLogout} className="text-white hover:text-gray-200">Logout</button>
+              </li>
+            </>
+          ) : (
+            <li>
+              <Link to="/login" className="text-white hover:text-gray-200">Login</Link>
+            </li>
+          )}
         </ul>
       </nav>
+
       <Routes>
-        <Route path="/signup" element={<SignUpForm />} />
-        <Route path="/login" element={<LoginForm />} />
-        <Route path="/" element={<LoginForm />} />
+        <Route path="/login" 
+               element={isAuthenticated ? <Navigate to="/profile" /> : <LoginForm onLogin={handleLogin}/>}
+         />
+        <Route path="/profile"
+               element={isAuthenticated ? <UserProfile onLogout={handleLogout} /> : <Navigate to="/login" />}
+         />
+        <Route path="/" element={<Navigate to="/login" />} />
       </Routes>
-    </div>
     </Router>
   );
 }
