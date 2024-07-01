@@ -1,15 +1,23 @@
 const express = require('express');
-const app = express();
-app.use(express.json());
 const cors = require('cors');
-app.use(cors());
-const env = require('dotenv').config;
+const bodyParser = require('body-parser');
+const env = require('dotenv').config();
 const { v4: uuidv4 } = require('uuid');
-const bcrypt = require('bcryptjs')
+const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const supabase = require('./db.js')
+const supabase = require('./db.js');
+const { SupabaseClient } = require('@supabase/supabase-js');
+
+const app = express();
 const PORT = 5000;
 const JWT_Secret = process.env.JWT_SECRET
+
+
+app.use(cors());
+app.use(express.json());
+app.use(bodyParser.json());
+
+
 
 app.post('/signup', async (req, res) => {
     const { username , password } = req.body;
@@ -182,6 +190,94 @@ app.get('/users', verifyToken, async (req, res) => {
          res.status(500).json({ error: 'Unexpected error occurred.' });
      }
 });
+
+app.post('/users/settings', verifyToken, async (req, res) => {
+   const userId = req.user.userId;
+   const { theme, grid_lines, axis_settings } = req.body;
+
+   if (typeof theme !== 'string' || typeof grid_lines !== 'boolean' || typeof axis_settings !== 'object') {
+      return res.status(400).json({ error: 'Invalid request body' });
+   }
+   
+   try {
+      const {data, error} = await supabase
+        .from('usersettings')
+        .insert([{ user_id: userId, theme, grid_lines, axis_settings }])
+        .select()
+        .single();
+   
+
+   if (error) {
+      console.error('Error inserting user settings:', error);
+      return res.status(500).json({ error: 'Error inserting user settings' });
+   }
+
+   res.status(201).json({ settings: data });
+  } catch (error) {
+     console.error('Unexpected error occurred:', error);
+     res.status(500).json({ error: 'Unexpected error occurred' });
+  }
+});
+
+app.put('/users/settings', verifyToken, async (req, res) => {
+   console.log('Request Body:', req.body);
+
+   const userId = req.user.userId;
+   const { theme, grid_lines, axis_settings } = req.body;
+
+   if (typeof theme !== 'string') {
+      console.error('Invalid theme:', theme);
+      return res.status(400).json({error : 'Invalid theme'});
+      }
+
+   if (typeof grid_lines !== 'boolean') {
+      console.error('Invalid grid_lines:', grid_lines);
+      return res.status(400).json({ error: 'Invalid grid_lines' });
+   }
+
+   if (typeof axis_settings !== 'object') {
+      console.error('Invalid axis_settings:', axis_settings);
+      return res.status(400).json({ error: 'Invalid axis_settings' })
+   }
+
+   try {
+      const { data: existingSettings, error: fetchError } = await supabase
+        .from('usersettings')
+        .select('id')
+        .eq('user_id', userId)
+        .single();
+
+      if (fetchError) {
+         console.error('Error fetching user settings:', fetchError);
+         return res.status(500).json({ error: 'Error fetching user settings' });
+      }
+
+      if (!existingSettings) {
+         console.error('No settings found for user:', userId);
+         return res.status(404).json({ error: 'No settings found for user' });
+      }
+
+      const { data, error } = await supabase
+        .from('usersettings')
+        .update({ theme, grid_lines, axis_settings })
+        .eq('user_id', userId)
+        .eq('id', existingSettings.id)
+        .select()
+        .single();
+
+      if (error) {
+         console.error('Error updating user settings', error);
+         return res.status(500).json({ error: 'Error updating user settings' });
+      }
+
+      res.status(200).json({ settings: data });
+   } catch (error) {
+     console.error('Unexpected error occurred:', error);
+     res.status(500).json({ error: 'Unexpected error occurred' });
+   }
+});
+
+
 
 
 
