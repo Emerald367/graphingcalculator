@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { FaCog } from 'react-icons/fa';
 import axios from 'axios';
 
 const UserProfile = ({ onLogout }) => {
@@ -74,6 +75,9 @@ const UserProfile = ({ onLogout }) => {
               className="mt-4 bg-red-500 text-white w-full py-2 rounded hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500"
              >
                 Logout
+             </button>
+             <button onClick={() => navigate('/settings')}>
+                <FaCog /> Settings
              </button>
             </div>
         </div>
