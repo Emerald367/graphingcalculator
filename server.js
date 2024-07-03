@@ -191,6 +191,28 @@ app.get('/users', verifyToken, async (req, res) => {
      }
 });
 
+app.get('/users/settings', verifyToken, async (req, res) => {
+   const userId = req.user.userId;
+   
+   try {
+      const { data, error } = await supabase
+          .from('usersettings')
+          .select('*')
+          .eq('user_id', userId)
+          .single();
+
+       if (error) {
+           console.error('Error fetching user settings:', error);
+           return res.status(500).json({ error: 'Error fetching user settings' });
+       }
+
+       res.status(200).json({ settings: data });
+   } catch (error) {
+       console.error('Unexpected error occurred:', error);
+       res.status(500).json({ error: 'Unexpected error occurred' })
+   }
+})
+
 app.post('/users/settings', verifyToken, async (req, res) => {
    const userId = req.user.userId;
    const { theme, grid_lines, axis_settings } = req.body;
