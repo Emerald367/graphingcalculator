@@ -76,8 +76,14 @@ const UserProfile = ({ onLogout }) => {
              >
                 Logout
              </button>
-             <button onClick={() => navigate('/settings')}>
-                <FaCog /> Settings
+             <button onClick={() => navigate('/settings')}
+              className="mt-4 bg-green-500 text-white w-full py-2 rounded flex items-center justify-center hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500">
+                <FaCog className="mr-2" /> Settings
+             </button>
+             <button onClick={() => navigate('/graphs')}
+               className="mt-4 bg-green-500 text-white w-full py-2 rounded flex items-center justify-center hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500"
+             >
+               <FaCog className="mr-2" /> Graphs
              </button>
             </div>
         </div>

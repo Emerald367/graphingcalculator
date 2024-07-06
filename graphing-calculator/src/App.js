@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Route, Routes, Navigate, Link } from 'react-ro
 import LoginForm from './LoginForm';
 import UserProfile from './UserProfile';
 import UserSettings from './UserSettings';
+import UserGraph from './UserGraph';
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(!!localStorage.getItem('token'));
@@ -27,6 +28,9 @@ function App() {
               <li className="mr-6">
                 <Link to="/settings" className="text-white hover:text-gray-200">Settings</Link>
               </li>
+              <li className="mr-6">
+                <Link to="/graphs" className="text-white hover:text-gray-200">Graphs</Link>
+              </li>
               <li>
                 <button onClick={handleLogout} className="text-white hover:text-gray-200">Logout</button>
               </li>
@@ -47,6 +51,7 @@ function App() {
                element={isAuthenticated ? <UserProfile onLogout={handleLogout} /> : <Navigate to="/login" />}
          />
         <Route path="/settings" element={isAuthenticated ? <UserSettings /> : <Navigate to="/login" />} />
+        <Route path="/graphs" element={isAuthenticated ? <UserGraph onLogout={handleLogout} /> : <Navigate to="/login" />} />
         <Route path="/" element={<Navigate to="/login" />} />
       </Routes>
     </Router>
