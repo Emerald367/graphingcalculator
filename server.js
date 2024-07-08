@@ -299,6 +299,139 @@ app.put('/users/settings', verifyToken, async (req, res) => {
    }
 });
 
+app.post('/graphs', verifyToken, async (req, res) => {
+   const userId = req.user.userId;
+   const { name, description } = req.body;
+
+   if (!name) {
+      return res.status(400).json({ error: 'Graph name is required'});
+   }
+
+   try {
+      const { data, error } = await supabase
+          .from('graphs')
+          .insert([{ name, description, user_id: userId}])
+          .select()
+          .single();
+
+       if (error) {
+         console.error('Error creating graph:', error);
+         return res.status(500).json({ error: 'Error creating graph' });
+       }
+
+       res.status(201).json({ graph: data });
+   } catch (error) {
+      console.error('Unexpected error occurred:', error);
+      res.status(500).json({ error: 'Unexpected error occurred' });
+   }
+})
+
+app.get('/graphs', verifyToken, async (req, res) => {
+   const userId = req.user.userId;
+
+   try {
+      const {data, error} = await supabase
+          .from('graphs')
+          .select('*')
+          .eq('user_id', userId);
+
+       if (error) {
+         console.error('Error fetching graphs:', error);
+         return res.status(500).json({ error: 'Error fetching graphs' });
+       }
+
+       res.status(200).json({ graphs: data });
+   } catch (error) {
+      console.error('Unexpected error occurred', error);
+      res.status(500).json({ error: 'Unexpected error occurred' });
+   }
+});
+
+app.get('/graphs/:id', verifyToken, async (req, res) => {
+   const userId = req.user.userId;
+   const graphId = req.params.id;
+
+   try {
+      const {data, error} = await supabase
+          .from('graphs')
+          .select('*')
+          .eq('user_id', userId)
+          .eq('id', graphId)
+          .single();
+
+       if (error) {
+         console.error('Error fetching graph:', error);
+         return res.status(500).json({ error: 'Error fetching graph '});
+       }
+
+       if (!data) {
+         return res.status(404).json({ error: 'Graph not found' });
+       }
+
+       res.status(200).json({ graph: data });
+   } catch (error) {
+      console.error('Unexpected error occurred:', error);
+      res.status(500).json({ error: 'Unexpected error occurred' });
+   }
+});
+
+app.put('/graphs/:id', verifyToken, async (req, res) => {
+    const userId = req.user.userId;
+    const graphId = req.params.id;
+    const { name, description } = req.body;
+
+    if (!name || !description) {
+      return res.status(400).json({ error: 'Name and description are required' });
+    }
+
+    try {
+      const {data, error} = await supabase
+          .from('graphs')
+          .update({ name, description, updated_at: new Date().toISOString() })
+          .eq('user_id', userId)
+          .eq('id', graphId)
+          .select()
+          .single();
+
+      if (error) {
+         console.error('Error updating graph', error);
+         return res.status(500).json({ error: 'Error updating graph' });
+      }
+
+      res.status(200).json({ graph: data});
+    } catch (error) {
+      console.error('Unexpected error occurred:', error);
+      res.status(500).json({ error: 'Unexpected error occurred' });
+    }
+});
+
+app.delete('/graphs/:id', verifyToken, async (req, res) => {
+   const userId = req.user.userId;
+   const graphId = req.params.id;
+
+   try {
+      const { data, error } = await supabase
+          .from('graphs')
+          .delete()
+          .eq('user_id', userId)
+          .eq('id', graphId);
+
+      if (error) {
+         console.error('Error deleting graph:', error);
+         return res.status(500).json({ error: 'Error deleting graph' });
+      }
+
+      if (data.length === 0) {
+         return res.status(404).json({ error: 'Graph not found' });
+      }
+
+      res.status(200).json({ message: 'Graph deleted successfully' });
+   } catch (error) {
+      console.error('Unexpected error occurred:', error)
+      res.status(500).json({ error: 'Unexpected error occurred' });
+   }
+})
+
 
 
 
