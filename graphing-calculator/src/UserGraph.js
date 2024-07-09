@@ -2,10 +2,12 @@
 
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import GraphComponent from './GraphComponent';
 
 const UserGraph = ({ onLogout }) => {
   const [graphs, setGraphs] = useState([]);
   const [selectedGraph, setSelectedGraph] = useState(null);
+  const [equations, setEquations] = useState([]);
   const [error, setError] = useState('');
 
   useEffect(() => {
@@ -28,10 +30,15 @@ const UserGraph = ({ onLogout }) => {
   const fetchGraphDetails = async (id) => {
     const token = localStorage.getItem('token');
     try {
-      const response = await axios.get(`http://localhost:5000/graphs/${id}`, {
-        headers: { Authorization: `Bearer ${token}`}
+      const graphResponse = await axios.get(`http://localhost:5000/graphs/${id}`, {
+        headers: { Authorization: `Bearer ${token}`},
       });
-      setSelectedGraph(response.data.graph);
+      setSelectedGraph(graphResponse.data.graph);
+
+      const equationsResponse = await axios.get(`http://localhost:5000/graphs/${id}/equations`, {
+        headers: { Authorization: `Bearer ${token}`},
+      });
+      setEquations(equationsResponse.data.equations);
     } catch (err) {
       setError('Error fetching graph details');
       console.error(err);
@@ -60,6 +67,9 @@ const UserGraph = ({ onLogout }) => {
             <p>Name: {selectedGraph.name}</p>
             <p>Description: {selectedGraph.description}</p>
             <p>Created At: {selectedGraph.created_at}</p>
+
+            {/* Render the GraphComponent */}
+            <GraphComponent equations={equations} />
           </div>
       )}
     </div>
