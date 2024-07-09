@@ -432,6 +432,72 @@ app.delete('/graphs/:id', verifyToken, async (req, res) => {
    }
 })
 
+app.post('/graphs/:graphId/equations', verifyToken, async (req, res) => {
+   const userId = req.user.userId;
+   const graphId = req.params.graphId;
+   const { equation, color, thickness } = req.body;
+
+   if (!equation || !color || !thickness) {
+      return res.status(400).json({ error: 'Equation, color, and thickenss are required' });
+   }
+    try {
+       const { data: graphData, error: graphError } = await supabase
+           .from('graphs')
+           .select('*')
+           .eq('user_id', userId)
+           .eq('id', graphId)
+           .single();
+
+       if (graphError || !graphData) {
+         return res.status(404).json({ error: 'Graph not found' });
+       }
+
+       const { data, error } = await supabase
+           .from('equations')
+           .insert([{ graph_id: graphId, equation, color, thickness }])
+           .select()
+           .single();
+
+       if (error) {
+         console.error('Error adding equation:', error);
+         return res.status(500).json({ error: 'Error adding equation' });
+       }
+       
+       res.status(201).json({ equation: data });
+
+    } catch (error) {
+        console.error('Unexpected error occurred:', error);
+        res.status(500).json({ error: 'Unexpected error occurred' });
+    }
+   
+});
+
+const validateEquation = (equation) => {
+   const linearRegex = /^y\s*=\s*[+-]?\d*x\s*([+-]\s*\d+)?$/;
+   const quadraticRegex = /^y\s*=\s*[+-]?\d*x\^2\s*([+-]\s*\d*x\s*)?([+-]\s*\d+)?$/;
+   const polynomialRegex = /^y\s*=\s*[+-]?\d*x\^\d+(\s*[+-]\s*\d*x\^\d+)*(\s*[+-]\s*\d+)?$/;
+   const exponentialRegex = /^y\s*=\s*[+-]?\d*\^\(x\)\s*([+-]\s*\d+)?$/;
+   const logarithmicRegex = /^y\s*=\s*log\(\d*\s*x\)\s*([+-]\s*\d+)?$/;
+   const trigonometricRegex = /^y\s*=\s*(sin|cos|tan)\(x\)\s*([+-]\s*\d+)?$/;
+   const conicSectionsRegex = /^(\d*\s*x\^2\s*[+-]\s*\d*\s*y\^2\s*=\s*\d+)$/;
+   const rationalRegex = /^y\s*=\s*\d*x\/\d+(\s*[+-]\s*\d+)?$/;
+   const radicalRegex = /^y\s*=\s*\d*\s*\*sqrt\(\d*x\)\s*([+-]\s*\d+)?$/;
+
+   const regexes = [
+      linearRegex,
+      quadraticRegex,
+      polynomialRegex,
+      exponentialRegex,
+      logarithmicRegex,
+      trigonometricRegex,
+      conicSectionsRegex,
+      rationalRegex,
+      radicalRegex,
+   ]
+
+   return regexes.some((regex) => regex.test(equation));
+};
+
 
 
 
