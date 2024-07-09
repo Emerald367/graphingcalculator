@@ -10,6 +10,8 @@ const LoginForm = ({ onLogin }) => {
 
     const handleLogin = async (e) => {
         e.preventDefault();
+        setError('')
+        setSuccess('')
 
         try {
             const response = await axios.post('http://localhost:5000/login', {
@@ -19,7 +21,6 @@ const LoginForm = ({ onLogin }) => {
         const { token } = response.data;
         localStorage.setItem('token', token);
         setSuccess('Login successful');
-        setError('');
         onLogin();
         } catch (error) {
             setError('Login failed. Please check your username and password.');
