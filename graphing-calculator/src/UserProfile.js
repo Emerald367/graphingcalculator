@@ -1,10 +1,16 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FaCog } from 'react-icons/fa';
 import axios from 'axios';
+import GraphComponent from './GraphComponent';
+import { evaluate, parse } from 'mathjs';
 
 const UserProfile = ({ onLogout }) => {
     const [user, setUser] = useState(null);
+    const [equations, setEquations] = useState([]);
+    const [newEquation, setNewEquation] = useState('');
+    const [color, setColor] = useState('#ff0000');
+    const [thickness, setThickness] = useState(1);
     const [error, setError] = useState('');
     const navigate = useNavigate();
 
@@ -54,6 +60,52 @@ const UserProfile = ({ onLogout }) => {
         }
     };
 
+    const handleAddEquation = async () => {
+      const token = localStorage.getItem('token');
+      try {
+        const response = await axios.post('http://localhost:5000/graphs/equations', {
+          equation: newEquation,
+          color,
+          thickness
+        }, {
+          headers: {Authorization: `Bearer ${token}`}
+        });
+        setEquations([...equations, response.data.equation]);
+        setNewEquation('');
+        setColor('#ff0000');
+        setThickness(1);
+      } catch (err) {
+        setError('Error adding equation');
+        console.error(err.response || err.message);
+      }
+    }
+
+     const generateData = (equation) => {
+       const data = [];
+       try {
+           const node = parse(equation);
+           const compiled = node.compile();
+           for (let x = -10; x <= 10; x += 0.1) {
+                const scope = { x };
+                const y = compiled.evaluate(scope);
+                data.push({ x, y });
+           } 
+       } catch (error) {
+           console.error('Invalid equation:', error);
+       }
+       return data;
+     }
+
+     const graphData = {
+         datasets: equations.map(eq => ({
+             label: eq.equation,
+             data: generateData(eq.equation),
+             borderColor: eq.color,
+             borderWidth: eq.thickness,
+             fill: false
+         }))
+     }
+
     if (error) {
         return <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">{error}</div>;
     }
@@ -85,6 +137,35 @@ const UserProfile = ({ onLogout }) => {
              >
                <FaCog className="mr-2" /> Graphs
              </button>
+            </div>
+            <div className="mt-8 bg-white p-6 rounded shadow-md w-full">
+              <h2 className="text-2xl font-bold text-center mb-4 text-green-600">Graphing Calculator</h2>
+              <GraphComponent equations={equations} />
+              <div className="mt-4">
+                <input
+                  type="text"
+                  value={newEquation}
+                  onChange={(e) => setNewEquation(e.target.value)}
+                  placeholder="Enter equation"
+                  className="border p-2 w-full"
+                />
+                <input
+                    type="color"
+                    value={color}
+                    onChange={(e) => setColor(e.target.value)}
+                    className="border p-2 w-full mt-2"
+                 />
+                 <input
+                     type="number"
+                     value={thickness}
+                     onChange={(e) => setThickness(parseInt(e.target.value))}
+                     placeholder="Thickness"
+                     className="border p-2 w-full mt-2"
+                 />
+                <button onClick={handleAddEquation} className="mt-2 bg-green-600 text-white py-2 px-4 rounded">
+                  Add Equation
+                </button>
+              </div>
             </div>
         </div>
     );
