@@ -432,35 +432,30 @@ app.delete('/graphs/:id', verifyToken, async (req, res) => {
    }
 })
 
-app.post('/graphs/:graphId/equations', verifyToken, async (req, res) => {
+app.post('/graphs/equations', verifyToken, async (req, res) => {
    const userId = req.user.userId;
-   const graphId = req.params.graphId;
-   const { equation, color, thickness } = req.body;
+   const { equation, color, thickness} = req.body;
 
-   if (!equation || !color || !thickness) {
-      return res.status(400).json({ error: 'Equation, color, and thickenss are required' });
+   if (!equation || !color || thickness == null) {
+      return res.status(400).json({ error: 'Equation is required' });
    }
+
+   if (!validateEquation(equation)) {
+      return res.status(400).json({ error: 'Invalid equation format'});
+   }
+
+   const id = uuidv4();
+
     try {
-       const { data: graphData, error: graphError } = await supabase
-           .from('graphs')
-           .select('*')
-           .eq('user_id', userId)
-           .eq('id', graphId)
-           .single();
-
-       if (graphError || !graphData) {
-         return res.status(404).json({ error: 'Graph not found' });
-       }
-
        const { data, error } = await supabase
            .from('equations')
-           .insert([{ graph_id: graphId, equation, color, thickness }])
+           .insert([{equation, color, id, thickness }])
            .select()
            .single();
 
        if (error) {
          console.error('Error adding equation:', error);
-         return res.status(500).json({ error: 'Error adding equation' });
+         return res.status(500).json({ error: 'Error creating equation' });
        }
        
        res.status(201).json({ equation: data });
@@ -497,6 +492,8 @@ const validateEquation = (equation) => {
 
    return regexes.some((regex) => regex.test(equation));
 };
+
+
 
 
 
