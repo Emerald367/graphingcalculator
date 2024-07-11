@@ -111,60 +111,62 @@ const UserProfile = ({ onLogout }) => {
     }
 
     return (
-        <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
-            <div className="bg-white p-6 rounded shadow-md w-80">
-                <h2 className="text-2xl font-bold text-center mb-8 text-green-600">User Profile</h2>
-                {user && (
-                <div>
-                   <p className="text-lg"><strong>ID:</strong> {user.id}</p>
-                   <p className="text-lg"><strong>Username:</strong> {user.username}</p>
-                   <p className="text-lg"><strong>Created At:</strong> {user.created_at}</p>
+        <div className="flex flex-row items-start justify-center min-h-screen bg-gray-100 p-8 space-x-8">
+            <div className="bg-white p-6 rounded shadow-md w-4/5">
+                <h2 className="text-2xl font-bold text-center mb-4 text-green-600">Graphing Calculator</h2>
+                <GraphComponent equations={equations} />
+                <div className="mt-4 flex flex-col space-y-2">
+                    <input 
+                        type="text"
+                        value={newEquation}
+                        onChange={(e) => setNewEquation(e.target.value)}
+                        placeholder="Enter equation"
+                        className="border p-2 w-full rounded"
+                     />
+                    <input
+                        type="color"
+                        value={newEquation}
+                        onChange={(e) => setNewEquation(e.target.value)}
+                        placeholder="Enter equation"
+                        className="border p-2 w-full rounded"
+                    />
+                    <input
+                        type="number"
+                        value={thickness}
+                        onChange={(e) => setThickness(parseInt(e.target.value))}
+                        placeholder="Thickness"
+                        className="border p-2 w-full rounded"
+                    />
+                    <button onClick={handleAddEquation} className="mt-2 bg-green-600 text-white py-2 px-4 rounded hover:bg-green-700">
+                        Add Equation
+                    </button>
                 </div>
-               )}
-            {error && <div className="mb-4 text-red-500">{error}</div>}
-            <button
-              onClick={handleLogout}
-              className="mt-4 bg-red-500 text-white w-full py-2 rounded hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500"
-             >
-                Logout
-             </button>
-             <button onClick={() => navigate('/settings')}
-              className="mt-4 bg-green-500 text-white w-full py-2 rounded flex items-center justify-center hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500">
-                <FaCog className="mr-2" /> Settings
-             </button>
-             <button onClick={() => navigate('/graphs')}
-               className="mt-4 bg-green-500 text-white w-full py-2 rounded flex items-center justify-center hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500"
-             >
-               <FaCog className="mr-2" /> Graphs
-             </button>
             </div>
-            <div className="mt-8 bg-white p-6 rounded shadow-md w-full">
-              <h2 className="text-2xl font-bold text-center mb-4 text-green-600">Graphing Calculator</h2>
-              <GraphComponent equations={equations} />
-              <div className="mt-4">
-                <input
-                  type="text"
-                  value={newEquation}
-                  onChange={(e) => setNewEquation(e.target.value)}
-                  placeholder="Enter equation"
-                  className="border p-2 w-full"
-                />
-                <input
-                    type="color"
-                    value={color}
-                    onChange={(e) => setColor(e.target.value)}
-                    className="border p-2 w-full mt-2"
-                 />
-                 <input
-                     type="number"
-                     value={thickness}
-                     onChange={(e) => setThickness(parseInt(e.target.value))}
-                     placeholder="Thickness"
-                     className="border p-2 w-full mt-2"
-                 />
-                <button onClick={handleAddEquation} className="mt-2 bg-green-600 text-white py-2 px-4 rounded">
-                  Add Equation
-                </button>
+            <div className="bg-white p-6 rounded shadow-md w-1/5">
+              <h2 className="text-2xl font-bold text-center mb-8 text-green-600">User Profile</h2>
+              {user && (
+                <div className="space-y-4">
+                   <p className="text-lg font-semibold text-gray-700"><strong>ID:</strong><span className="text-gray-500">{user.id}</span></p>
+                   <p className="text-lg font-semibold text-gray-700"><strong>Username:</strong><span className="text-gray-500"> {user.username}</span></p>
+                   <p className="text-lg font-semibold text-gray-700"><strong>Created At:</strong><span className="text-gray-500"> {new Date(user.created_at).toLocaleString()}</span></p>
+                </div>
+              )}
+              {error && <div className="mb-4 text-red-500">{error}</div>}
+              <div className="mt-4 flex flex-col space-y-2">
+                  <button 
+                      onClick={handleLogout}
+                      className="bg-red-500 text-white w-full py-2 rounded hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500"
+                  >
+                      Logout
+                  </button>
+                  <button onClick={() => navigate('/settings')}
+                      className="bg-green-500 text-white w-full py-2 rounded flex items-center justify-center hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500">
+                      <FaCog className="mr-2" /> Settings
+                  </button>
+                  <button onClick={() => navigate('/graphs')}
+                      className="bg-green-500 text-white w-full py-2 rounded flex items-center justify-center hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500">
+                        <FaCog className="mr-2" /> Graphs
+                      </button>
               </div>
             </div>
         </div>
