@@ -493,6 +493,39 @@ const validateEquation = (equation) => {
    return regexes.some((regex) => regex.test(equation));
 };
 
+app.put('/graphs/equations/:id', verifyToken, async (req, res) => {
+   const userId = req.user.userId;
+   const { id } = req.params;
+   const {equation, color, thickness} = req.body;
+
+   if (!equation || !color || thickness == null) {
+      return res.status(400).json({ error: 'Equation, color, and thickness are required'})
+   }
+
+   if (!validateEquation(equation)) {
+      return res.status(400).json({ error: 'Invalid equation format'});
+   }
+
+   try {
+      const { data, error } = await supabase
+          .from('equations')
+          .update({ equation, color, thickness })
+          .eq('id', id)
+          .select()
+          .single();
+
+      if (error) {
+         console.error('Error updating equation', error);
+         return res.status(500).json({ error: 'Error updating equation' });
+      }
+
+      res.status(200).json({ equation: data });
+   } catch (error) {
+      console.error('Unexpected error occurred:', error);
+      res.status(500).json({ error: 'Unexpected error occurred' });
+   }
+})
+
 
 
 
