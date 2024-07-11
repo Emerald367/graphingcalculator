@@ -51,19 +51,24 @@ const GraphComponent = ({ equations }) => {
             },
             options: {
               responsive: true,
+              maintainAspectRatio: false,
               scales: {
                 x: {
                   type: 'linear',
                   position: 'bottom'
-                }
+                },
+                y: {
+                  type: 'linear',
+                  position: 'left',
+                },
               }
             }
           });
       }, [equations]);
 
     return (
-        <div>
-            <canvas ref={chartRef} width="400" height="400"></canvas>
+        <div className="relative w-full h-96">
+            <canvas ref={chartRef}></canvas>
         </div>
     );
 };
