@@ -526,6 +526,30 @@ app.put('/graphs/equations/:id', verifyToken, async (req, res) => {
    }
 })
 
+app.delete('/graphs.equations/:id', verifyToken, async (req, res) => {
+   const userId = req.user.userId;
+   const { id } = req.params;
+
+   try {
+      const {data, error} = await supabase
+          .from('equations')
+          .delete()
+          .eq('id', id)
+          .select()
+          .single();
+
+      if (error) {
+         console.error('Error deleting equation:', error);
+         return res.status(500).json({ error: 'Error deleting equation' });
+      }
+
+      res.status(200).json({ message: 'Equation deleted successfully', equation: data })
+   } catch (error) {
+      console.error('Unexpected error occurred:', error);
+      res.status(500).json({ error: 'Unexpected error occurred' });
+   }
+});
+
 
 
 
