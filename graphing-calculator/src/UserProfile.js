@@ -11,6 +11,7 @@ const UserProfile = ({ onLogout }) => {
     const [newEquation, setNewEquation] = useState('');
     const [color, setColor] = useState('#ff0000');
     const [thickness, setThickness] = useState(1);
+    const [selectedEquation, setSelectedEquation] = useState(null);
     const [error, setError] = useState('');
     const navigate = useNavigate();
 
@@ -80,6 +81,38 @@ const UserProfile = ({ onLogout }) => {
       }
     }
 
+     const handleUpdateEquation = async (id) => {
+        const token = localStorage.getItem('token')
+        try {
+            const response = await axios.put(`http://localhost:5000/graphs/equations/${id}`, {
+              equation: selectedEquation.equation,
+              color: selectedEquation.color,
+              thickness: selectedEquation.thickness
+            }, {
+              headers: {Authorization: `Bearer ${token}`}
+            });
+            setEquations(equations.map(eq => eq.id === id ? response.data.equation : eq));
+            setSelectedEquation(null);
+        } catch (err) {
+            setError('Error updating equation');
+            console.error(err.response || err.message);
+        }
+     }
+
+
+    const handleDeleteEquation = async (id) => {
+      const token = localStorage.getItem('token');
+      try {
+          await axios.delete(`http://localhost:5000/graphs/equations/${id}`, {
+              headers: { Authorization: `Bearer ${token}` }
+          });
+          setEquations(equations.filter(eq => eq.id !== id));
+      } catch (err) {
+          setError('Error deleting equation');
+          console.error(err.response || err.message);
+      }
+  }
+
      const generateData = (equation) => {
        const data = [];
        try {
@@ -125,9 +158,8 @@ const UserProfile = ({ onLogout }) => {
                      />
                     <input
                         type="color"
-                        value={newEquation}
-                        onChange={(e) => setNewEquation(e.target.value)}
-                        placeholder="Enter equation"
+                        value={color}
+                        onChange={(e) => setColor(e.target.value)}
                         className="border p-2 w-full rounded"
                     />
                     <input
@@ -140,8 +172,60 @@ const UserProfile = ({ onLogout }) => {
                     <button onClick={handleAddEquation} className="mt-2 bg-green-600 text-white py-2 px-4 rounded hover:bg-green-700">
                         Add Equation
                     </button>
-                </div>
             </div>
+            <div className="mt-4">
+              {equations.map(eq => (
+                <div key={eq.id} className="flex items-center justify-between p-2 border-b">
+                  <span>{eq.equation}</span>
+                  <div className="flex items-center space-x-2">
+                    <button
+                        onClick={() => setSelectedEquation(eq)}
+                        className="text-blue-500 hover: underline"
+                    >
+                        Edit
+                    </button>
+                    <button
+                        onClick={() => handleDeleteEquation(eq.id)}
+                        className="text-red-500 hover:underline"
+                    >
+                        Delete
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+            {selectedEquation && (
+              <div className="mt-4">
+                <h3 className="text-lg font-bold text-green-600">Update Equation</h3>
+                <input
+                    type="text"
+                    value={selectedEquation.equation}
+                    onChange={(e) => setSelectedEquation({...selectedEquation, equation: e.target.value})}
+                    placeholder="Enter equation"
+                    className="border p-2 w-full rounded mt-2"
+                 />
+                <input
+                   type="color"
+                   value={selectedEquation.color}
+                   onChange={(e) => setSelectedEquation({ ...selectedEquation, color: e.target.value})}
+                   className="border p-2 w-full rounded mt-2"
+                 />
+                <input
+                   type="number"
+                   value={selectedEquation.thickness}
+                   onChange={(e) => setSelectedEquation({ ...selectedEquation, thickness: parseInt(e.target.value)})}
+                   placeholder="Thickness"
+                   className="border p-2 w-full rounded mt-2"
+                 />
+                 <button
+                     onClick={() => handleUpdateEquation(selectedEquation.id)}
+                     className="mt-2 bg-green-600 text-white py-2 px-4 rounded hover:bg-green-700"
+                 >
+                     Update Equation
+                 </button>
+              </div>
+            )}
+          </div>
             <div className="bg-white p-6 rounded shadow-md w-1/5">
               <h2 className="text-2xl font-bold text-center mb-8 text-green-600">User Profile</h2>
               {user && (
@@ -166,7 +250,7 @@ const UserProfile = ({ onLogout }) => {
                   <button onClick={() => navigate('/graphs')}
                       className="bg-green-500 text-white w-full py-2 rounded flex items-center justify-center hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500">
                         <FaCog className="mr-2" /> Graphs
-                      </button>
+                  </button>
               </div>
             </div>
         </div>
