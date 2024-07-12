@@ -526,17 +526,15 @@ app.put('/graphs/equations/:id', verifyToken, async (req, res) => {
    }
 })
 
-app.delete('/graphs.equations/:id', verifyToken, async (req, res) => {
-   const userId = req.user.userId;
+app.delete('/graphs/equations/:id', verifyToken, async (req, res) => {
    const { id } = req.params;
+   console.log('Delete request received for ID:', id);
 
    try {
       const {data, error} = await supabase
           .from('equations')
           .delete()
           .eq('id', id)
-          .select()
-          .single();
 
       if (error) {
          console.error('Error deleting equation:', error);
