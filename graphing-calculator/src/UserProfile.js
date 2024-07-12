@@ -113,31 +113,6 @@ const UserProfile = ({ onLogout }) => {
       }
   }
 
-     const generateData = (equation) => {
-       const data = [];
-       try {
-           const node = parse(equation);
-           const compiled = node.compile();
-           for (let x = -10; x <= 10; x += 0.1) {
-                const scope = { x };
-                const y = compiled.evaluate(scope);
-                data.push({ x, y });
-           } 
-       } catch (error) {
-           console.error('Invalid equation:', error);
-       }
-       return data;
-     }
-
-     const graphData = {
-         datasets: equations.map(eq => ({
-             label: eq.equation,
-             data: generateData(eq.equation),
-             borderColor: eq.color,
-             borderWidth: eq.thickness,
-             fill: false
-         }))
-     }
 
     if (error) {
         return <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">{error}</div>;
