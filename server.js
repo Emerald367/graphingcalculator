@@ -477,6 +477,7 @@ const validateEquation = (equation) => {
    const conicSectionsRegex = /^(\d*\s*x\^2\s*[+-]\s*\d*\s*y\^2\s*=\s*\d+)$/;
    const rationalRegex = /^y\s*=\s*\d*x\/\d+(\s*[+-]\s*\d+)?$/;
    const radicalRegex = /^y\s*=\s*\d*\s*\*sqrt\(\d*x\)\s*([+-]\s*\d+)?$/;
+   const circleRegex = /^\s*\(x\s*[+-]\s*\d+\)\^2\s*[+-]\s*\(y\s*[+-]\s*\d+\)\^2\s*=\s*\d+$/;
 
    const regexes = [
       linearRegex,
@@ -488,6 +489,7 @@ const validateEquation = (equation) => {
       conicSectionsRegex,
       rationalRegex,
       radicalRegex,
+      circleRegex
    ]
 
    return regexes.some((regex) => regex.test(equation));
