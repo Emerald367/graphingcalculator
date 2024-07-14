@@ -4,7 +4,7 @@ import { parse } from 'mathjs';
 
 ChartJS.register(LineController, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
 
-const GraphComponent = ({ equations }) => {
+const GraphComponent = ({ equations, settings }) => {
     const chartRef = useRef(null);
     const chartInstanceRef = useRef(null);
 
@@ -84,16 +84,26 @@ const GraphComponent = ({ equations }) => {
                 scales: {
                     x: {
                         type: 'linear',
-                        position: 'bottom'
+                        position: 'bottom',
+                        min: settings.axis_settings.x_axis.min,
+                        max: settings.axis_settings.x_axis.max,
+                        grid: {
+                            display: settings.grid_lines
+                        }
                     },
                     y: {
                         type: 'linear',
                         position: 'left',
+                        min: settings.axis_settings.y_axis.min,
+                        max: settings.axis_settings.y_axis.max,
+                        grid: {
+                            display: settings.grid_lines
+                        }
                     },
                 }
             }
         });
-    }, [equations]);
+    }, [equations, settings]);
 
     return (
         <div className="relative w-full h-96">
