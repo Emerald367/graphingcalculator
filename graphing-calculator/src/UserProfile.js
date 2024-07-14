@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { FaCog } from 'react-icons/fa';
 import axios from 'axios';
 import GraphComponent from './GraphComponent';
-import { evaluate, parse } from 'mathjs';
+import UserSettings from './UserSettings';
 
 const UserProfile = ({ onLogout }) => {
     const [user, setUser] = useState(null);
@@ -13,6 +13,11 @@ const UserProfile = ({ onLogout }) => {
     const [thickness, setThickness] = useState(1);
     const [selectedEquation, setSelectedEquation] = useState(null);
     const [error, setError] = useState('');
+    const [settings, setSettings] = useState({
+      theme: '',
+      grid_lines: false,
+      axis_settings: { x_axis: { min: 0, max: 0}, y_axis: { min: 0, max: 0}}
+    })
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -113,102 +118,108 @@ const UserProfile = ({ onLogout }) => {
       }
   }
 
+    const handleUpdateSettings = (newSettings) => {
+      setSettings(newSettings);
+    };
 
     if (error) {
         return <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">{error}</div>;
     }
 
     return (
-        <div className="flex flex-row items-start justify-center min-h-screen bg-gray-100 p-8 space-x-8">
-            <div className="bg-white p-6 rounded shadow-md w-4/5">
-                <h2 className="text-2xl font-bold text-center mb-4 text-green-600">Graphing Calculator</h2>
-                <GraphComponent equations={equations} />
-                <div className="mt-4 flex flex-col space-y-2">
-                    <input 
-                        type="text"
-                        value={newEquation}
-                        onChange={(e) => setNewEquation(e.target.value)}
-                        placeholder="Enter equation"
-                        className="border p-2 w-full rounded"
-                     />
-                    <input
-                        type="color"
-                        value={color}
-                        onChange={(e) => setColor(e.target.value)}
-                        className="border p-2 w-full rounded"
-                    />
-                    <input
-                        type="number"
-                        value={thickness}
-                        onChange={(e) => setThickness(parseInt(e.target.value))}
-                        placeholder="Thickness"
-                        className="border p-2 w-full rounded"
-                    />
-                    <button onClick={handleAddEquation} className="mt-2 bg-green-600 text-white py-2 px-4 rounded hover:bg-green-700">
-                        Add Equation
-                    </button>
-            </div>
-            <div className="mt-4">
-              {equations.map(eq => (
-                <div key={eq.id} className="flex items-center justify-between p-2 border-b">
-                  <span>{eq.equation}</span>
-                  <div className="flex items-center space-x-2">
-                    <button
-                        onClick={() => setSelectedEquation(eq)}
-                        className="text-blue-500 hover: underline"
-                    >
-                        Edit
-                    </button>
-                    <button
-                        onClick={() => handleDeleteEquation(eq.id)}
-                        className="text-red-500 hover:underline"
-                    >
-                        Delete
-                    </button>
+      <div className="flex flex-row min-h-screen bg-gray-100 p-8 space-x-8">
+          <div className="flex flex-col w-4/5 space-y-8">
+              <div className="bg-white p-6 rounded shadow-md w-full">
+                  <h2 className="text-2xl font-bold text-center mb-4 text-green-600">Graphing Calculator</h2>
+                  <GraphComponent equations={equations} settings={settings}/>
+                  <div className="mt-4 flex flex-col space-y-2">
+                      <input 
+                          type="text"
+                          value={newEquation}
+                          onChange={(e) => setNewEquation(e.target.value)}
+                          placeholder="Enter equation"
+                          className="border p-2 w-full rounded"
+                      />
+                      <input
+                          type="color"
+                          value={color}
+                          onChange={(e) => setColor(e.target.value)}
+                          className="border p-2 w-full rounded"
+                      />
+                      <input
+                          type="number"
+                          value={thickness}
+                          onChange={(e) => setThickness(parseInt(e.target.value))}
+                          placeholder="Thickness"
+                          className="border p-2 w-full rounded"
+                      />
+                      <button onClick={handleAddEquation} className="mt-2 bg-green-600 text-white py-2 px-4 rounded hover:bg-green-700">
+                          Add Equation
+                      </button>
                   </div>
-                </div>
-              ))}
-            </div>
-            {selectedEquation && (
-              <div className="mt-4">
-                <h3 className="text-lg font-bold text-green-600">Update Equation</h3>
-                <input
-                    type="text"
-                    value={selectedEquation.equation}
-                    onChange={(e) => setSelectedEquation({...selectedEquation, equation: e.target.value})}
-                    placeholder="Enter equation"
-                    className="border p-2 w-full rounded mt-2"
-                 />
-                <input
-                   type="color"
-                   value={selectedEquation.color}
-                   onChange={(e) => setSelectedEquation({ ...selectedEquation, color: e.target.value})}
-                   className="border p-2 w-full rounded mt-2"
-                 />
-                <input
-                   type="number"
-                   value={selectedEquation.thickness}
-                   onChange={(e) => setSelectedEquation({ ...selectedEquation, thickness: parseInt(e.target.value)})}
-                   placeholder="Thickness"
-                   className="border p-2 w-full rounded mt-2"
-                 />
-                 <button
-                     onClick={() => handleUpdateEquation(selectedEquation.id)}
-                     className="mt-2 bg-green-600 text-white py-2 px-4 rounded hover:bg-green-700"
-                 >
-                     Update Equation
-                 </button>
+                  <div className="mt-4">
+                      {equations.map(eq => (
+                          <div key={eq.id} className="flex items-center justify-between p-2 border-b">
+                              <span>{eq.equation}</span>
+                              <div className="flex items-center space-x-2">
+                                  <button
+                                      onClick={() => setSelectedEquation(eq)}
+                                      className="text-blue-500 hover:underline"
+                                  >
+                                      Edit
+                                  </button>
+                                  <button
+                                      onClick={() => handleDeleteEquation(eq.id)}
+                                      className="text-red-500 hover:underline"
+                                  >
+                                      Delete
+                                  </button>
+                              </div>
+                          </div>
+                      ))}
+                  </div>
+                  {selectedEquation && (
+                      <div className="mt-4">
+                          <h3 className="text-lg font-bold text-green-600">Update Equation</h3>
+                          <input
+                              type="text"
+                              value={selectedEquation.equation}
+                              onChange={(e) => setSelectedEquation({ ...selectedEquation, equation: e.target.value })}
+                              placeholder="Enter equation"
+                              className="border p-2 w-full rounded mt-2"
+                          />
+                          <input
+                              type="color"
+                              value={selectedEquation.color}
+                              onChange={(e) => setSelectedEquation({ ...selectedEquation, color: e.target.value })}
+                              className="border p-2 w-full rounded mt-2"
+                          />
+                          <input
+                              type="number"
+                              value={selectedEquation.thickness}
+                              onChange={(e) => setSelectedEquation({ ...selectedEquation, thickness: parseInt(e.target.value) })}
+                              placeholder="Thickness"
+                              className="border p-2 w-full rounded mt-2"
+                          />
+                          <button
+                              onClick={() => handleUpdateEquation(selectedEquation.id)}
+                              className="mt-2 bg-green-600 text-white py-2 px-4 rounded hover:bg-green-700"
+                          >
+                              Update Equation
+                          </button>
+                      </div>
+                  )}
+                  <UserSettings onUpdateSettings={handleUpdateSettings} />
               </div>
-            )}
           </div>
-            <div className="bg-white p-6 rounded shadow-md w-1/5">
+          <div className="bg-white p-6 rounded shadow-md w-1/5">
               <h2 className="text-2xl font-bold text-center mb-8 text-green-600">User Profile</h2>
               {user && (
-                <div className="space-y-4">
-                   <p className="text-lg font-semibold text-gray-700"><strong>ID:</strong><span className="text-gray-500">{user.id}</span></p>
-                   <p className="text-lg font-semibold text-gray-700"><strong>Username:</strong><span className="text-gray-500"> {user.username}</span></p>
-                   <p className="text-lg font-semibold text-gray-700"><strong>Created At:</strong><span className="text-gray-500"> {new Date(user.created_at).toLocaleString()}</span></p>
-                </div>
+                  <div className="space-y-4">
+                      <p className="text-lg font-semibold text-gray-700"><strong>ID:</strong> <span className="text-gray-500">{user.id}</span></p>
+                      <p className="text-lg font-semibold text-gray-700"><strong>Username:</strong> <span className="text-gray-500"> {user.username}</span></p>
+                      <p className="text-lg font-semibold text-gray-700"><strong>Created At:</strong> <span className="text-gray-500"> {new Date(user.created_at).toLocaleString()}</span></p>
+                  </div>
               )}
               {error && <div className="mb-4 text-red-500">{error}</div>}
               <div className="mt-4 flex flex-col space-y-2">
@@ -224,12 +235,12 @@ const UserProfile = ({ onLogout }) => {
                   </button>
                   <button onClick={() => navigate('/graphs')}
                       className="bg-green-500 text-white w-full py-2 rounded flex items-center justify-center hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500">
-                        <FaCog className="mr-2" /> Graphs
+                      <FaCog className="mr-2" /> Graphs
                   </button>
               </div>
-            </div>
-        </div>
-    );
+          </div>
+      </div>
+  );
 };
 
 export default UserProfile;
