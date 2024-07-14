@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
-const UserSettings = ({ onLogout }) => {
+const UserSettings = ({ onLogout, onUpdateSettings }) => {
     const [settings, setSettings] = useState({
         theme: '',
         grid_lines: false,
@@ -17,6 +17,7 @@ const UserSettings = ({ onLogout }) => {
                     headers: { Authorization: `Bearer ${token}`}
                 });
                 setSettings(response.data.settings);
+                onUpdateSettings(response.data.settings);
             } catch (err) {
                 setError('Error fetching settings');
                 console.error(err);
@@ -24,19 +25,21 @@ const UserSettings = ({ onLogout }) => {
         };
 
         fetchSettings();
-    }, []);
+    }, [onUpdateSettings]);
 
     const handleChange = (e) => {
         const { name, value, type, checked } = e.target;
-        setSettings({
-            ...settings,
+        const updatedSettings = {
+            ...settings, 
             [name]: type === 'checkbox' ? checked : value
-        });
+        };
+        setSettings(updatedSettings);
+        onUpdateSettings(updatedSettings);
     };
 
     const handleAxisChange = (e, axis) => {
         const {name, value} = e.target;
-        setSettings({
+        const updatedSettings = {
             ...settings,
             axis_settings: {
                 ...settings.axis_settings,
@@ -45,7 +48,9 @@ const UserSettings = ({ onLogout }) => {
                     [name]: parseInt(value, 10)
                 }
             }
-        });
+        }
+        setSettings(updatedSettings);
+        onUpdateSettings(updatedSettings);
     };
 
     const handleSubmit = async (e) => {
@@ -64,19 +69,19 @@ const UserSettings = ({ onLogout }) => {
 
 
     return (
-        <div className="settings-container bg-white p-8 rounded-lg shadow-lg max-w-lg mx-auto mt-10">
+        <div className="settings-container bg-white p-8 rounded-lg shadow-lg mt-10 w-full">
             <h2 className="text-2xl font-bold text-green-600 mb-6">User Settings</h2>
             {error && <p className="error text-red-600 mb-4">{error}</p>}
-            <form onSubmit={handleSubmit} className="space-y-6">
+            <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                     <label className="block text-gray-700">Theme:</label>
                     <select name="theme" value={settings.theme} onChange={handleChange}
-                     className="w-full p-2 border border-gray-300 rounded mt-2">
+                     className="p-2 border border-gray-300 rounded mt-2 w-full">
                         <option value="light">Light</option>
                         <option value="dark">Dark</option>
                     </select>
                 </div>
-                <div>
+                <div className="flex items-center">
                     <label className="block text-gray-700">Show Grid Lines:</label>
                     <input
                       type="checkbox"
@@ -86,51 +91,54 @@ const UserSettings = ({ onLogout }) => {
                       className="mt-2"
                     />
                 </div>
-                <div>
+                <div className="col-span-2">
                     <h3 className="text-lg font-semibold text-green-600 mt-4">Axis Settings</h3>
-                    <div className="mt-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div>
                         <label className="block text-gray-700">X-Axis Min:</label>
                         <input
                           type="number"
                           name="min"
                           value={settings.axis_settings.x_axis.min}
                           onChange={(e) => handleAxisChange(e, 'x_axis')}
+                          className="p-2 border border-gray-300 rounded mt-2"
                         />
                     </div>
-                    <div className="mt-4">
+                    <div>
                         <label className="block text-gray-700">X-Axis Max:</label>
                         <input
                           type="number"
                           name="max"
                           value={settings.axis_settings.x_axis.max}
                           onChange={(e) => handleAxisChange(e, 'x_axis')}
-                          className="w-full p-2 border border-gray-300 rounded mt-2"
+                          className="p-2 border border-gray-300 rounded mt-2 w-full"
                         />
                     </div>
-                    <div className="mt-4">
+                    <div>
                         <label className="block text-gray-700">Y-Axis Min:</label>
                         <input
                           type="number"
                           name="min"
                           value={settings.axis_settings.y_axis.min}
                           onChange={(e) => handleAxisChange(e, 'y_axis')}
-                          className="w-full p-2 border border-gray-300 rounded mt-2"
+                          className="p-2 border border-gray-300 rounded mt-2 w-full"
                         />
                     </div>
-                    <div className="mt-4">
-                        <label className="block test-gray-700">Y-Axis Max:</label>
+                    <div>
+                        <label className="block text-gray-700">Y-Axis Max:</label>
                         <input
                           type="number"
                           name="max"
                           value={settings.axis_settings.y_axis.max}
                           onChange={(e) => handleAxisChange(e, 'y_axis')}
-                          className="w-full p-2 border border-gray-300 rounded mt-2"
+                          className="p-2 border border-gray-300 rounded mt-2 w-full"
                          />
                     </div>
+                  </div>
                 </div>
                 <button 
                   type="submit"
-                  className="w-full bg-green-600 text-white p-2 rounded hover:bg-green-700"
+                  className="bg-green-600 text-white p-2 rounded hover:bg-green-700 col-span-2"
                 >
                  Save Settings
                  </button>
