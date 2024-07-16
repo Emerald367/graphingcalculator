@@ -4,7 +4,7 @@ import { parse } from 'mathjs';
 
 ChartJS.register(LineController, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
 
-const GraphComponent = ({ equations, settings }) => {
+const GraphComponent = ({ equations }) => {
     const chartRef = useRef(null);
     const chartInstanceRef = useRef(null);
 
@@ -62,7 +62,7 @@ const GraphComponent = ({ equations, settings }) => {
             chartInstanceRef.current.destroy();
         }
 
-        const labels = Array.from({ length: 101 }, (_, i) => i - 50);
+        const labels = Array.from({ length: 201 }, (_, i) => i - 100);
 
         chartInstanceRef.current = new ChartJS(chartRef.current, {
             type: 'line',
@@ -85,25 +85,25 @@ const GraphComponent = ({ equations, settings }) => {
                     x: {
                         type: 'linear',
                         position: 'bottom',
-                        min: settings.axis_settings.x_axis.min,
-                        max: settings.axis_settings.x_axis.max,
+                        min: -10,
+                        max: 10,
                         grid: {
-                            display: settings.grid_lines
+                            display: true
                         }
                     },
                     y: {
                         type: 'linear',
                         position: 'left',
-                        min: settings.axis_settings.y_axis.min,
-                        max: settings.axis_settings.y_axis.max,
+                        min: -10,
+                        max: 10,
                         grid: {
-                            display: settings.grid_lines
+                            display: true
                         }
                     },
                 }
             }
         });
-    }, [equations, settings]);
+    }, [equations]);
 
     return (
         <div className="relative w-full h-96">
