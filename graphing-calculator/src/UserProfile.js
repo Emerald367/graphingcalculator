@@ -179,9 +179,9 @@ const UserProfile = ({ onLogout }) => {
               </div>
           </div>
           <div className="bg-white p-6 rounded shadow-md w-1/5">
-              <h2 className="text-2xl font-bold text-center mb-8 text-green-600">User Profile</h2>
+              <h2 className="text-2xl font-bold text-center mb-8 text-green-600">User Details</h2>
               {user && (
-                  <div className="space-y-4">
+                  <div className="space-y-40">
                       <p className="text-lg font-semibold text-gray-700"><strong>ID:</strong> <span className="text-gray-500">{user.id}</span></p>
                       <p className="text-lg font-semibold text-gray-700"><strong>Username:</strong> <span className="text-gray-500"> {user.username}</span></p>
                       <p className="text-lg font-semibold text-gray-700"><strong>Created At:</strong> <span className="text-gray-500"> {new Date(user.created_at).toLocaleString()}</span></p>
