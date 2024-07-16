@@ -1,7 +1,9 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import { BrowserRouter as Router, Route, Routes, Navigate, Link } from 'react-router-dom';
 import LoginForm from './LoginForm';
-import UserProfile from './UserProfile';
+import UserCalculator from './UserCalculator';
+import HomePageGraph from './HomePageGraph';
+import SignUpForm from './SignUpForm';
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(!!localStorage.getItem('token'));
@@ -21,7 +23,7 @@ function App() {
           {isAuthenticated ? (
             <>
               <li className="mr-6">
-                <Link to="/profile" className="text-white hover:text-gray-200">Profile</Link>
+                <Link to="/usercalculator" className="text-white hover:text-gray-200">UserCalculator</Link>
               </li>
               <li>
                 <button onClick={handleLogout} className="text-white hover:text-gray-200">Logout</button>
@@ -37,12 +39,12 @@ function App() {
 
       <Routes>
         <Route path="/login" 
-               element={isAuthenticated ? <Navigate to="/profile" /> : <LoginForm onLogin={handleLogin}/>}
+               element={<LoginForm onLogin={handleLogin}/>}
          />
-        <Route path="/profile"
-               element={isAuthenticated ? <UserProfile onLogout={handleLogout} /> : <Navigate to="/login" />}
+        <Route path="/usercalculator"
+               element={isAuthenticated ? <UserCalculator onLogout={handleLogout} /> : <Navigate to="/login" />}
          />
-        <Route path="/" element={<Navigate to="/login" />} />
+        <Route path="/" element={<HomePageGraph />} />
       </Routes>
     </Router>
   );
