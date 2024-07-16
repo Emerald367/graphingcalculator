@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import GraphComponent from './GraphComponent';
 
-const UserProfile = ({ onLogout }) => {
+const UserCalculator = ({ onLogout }) => {
     const [user, setUser] = useState(null);
     const [equations, setEquations] = useState([]);
     const [newEquation, setNewEquation] = useState('');
@@ -192,4 +192,4 @@ const UserProfile = ({ onLogout }) => {
   );
 };
 
-export default UserProfile;
+export default UserCalculator;
