@@ -12,7 +12,7 @@ const HomePageGraph = () => {
 
     const handleAddEquation = async () => {
         try {
-            const response = await axios.post('http://localhost:5000/public/graphs/equations', {
+            const response = await axios.post('https://graphingcalculator.onrender.com/public/graphs/equations', {
                 equation: newEquation,
                 color,
                 thickness
@@ -30,7 +30,7 @@ const HomePageGraph = () => {
 
     const handleUpdateEquation = async (id) => {
         try {
-            const response = await axios.put(`http://localhost:5000/public/graphs/equations/${id}`, {
+            const response = await axios.put(`https://graphingcalculator.onrender.com/public/graphs/equations/${id}`, {
                 equation: selectedEquation.equation,
                 color: selectedEquation.color,
                 thickness: selectedEquation.thickness
@@ -45,7 +45,7 @@ const HomePageGraph = () => {
 
     const handleDeleteEquation = async (id) => {
         try {
-            await axios.delete(`http://localhost:5000/public/graphs/equations/${id}`);
+            await axios.delete(`https://graphingcalculator.onrender.com/public/graphs/equations/${id}`);
             setEquations(equations.filter(eq => eq.id !== id));
         } catch (err) {
             setError('Error deleting equation');

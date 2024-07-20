@@ -22,7 +22,7 @@ const UserCalculator = ({ onLogout }) => {
               navigate('/login');
               return;
             }
-            const response = await axios.get('http://localhost:5000/users', {
+            const response = await axios.get('https://graphingcalculator.onrender.com/users', {
               headers: {
                 Authorization: `Bearer ${token}`,
               },
@@ -42,7 +42,7 @@ const UserCalculator = ({ onLogout }) => {
     const handleAddEquation = async () => {
       const token = localStorage.getItem('token');
       try {
-        const response = await axios.post('http://localhost:5000/graphs/equations', {
+        const response = await axios.post('https://graphingcalculator.onrender.com/graphs/equations', {
           equation: newEquation,
           color,
           thickness
@@ -63,7 +63,7 @@ const UserCalculator = ({ onLogout }) => {
      const handleUpdateEquation = async (id) => {
         const token = localStorage.getItem('token')
         try {
-            const response = await axios.put(`http://localhost:5000/graphs/equations/${id}`, {
+            const response = await axios.put(`https://graphingcalculator.onrender.com/graphs/equations/${id}`, {
               equation: selectedEquation.equation,
               color: selectedEquation.color,
               thickness: selectedEquation.thickness
@@ -82,7 +82,7 @@ const UserCalculator = ({ onLogout }) => {
     const handleDeleteEquation = async (id) => {
       const token = localStorage.getItem('token');
       try {
-          await axios.delete(`http://localhost:5000/graphs/equations/${id}`, {
+          await axios.delete(`https://graphingcalculator.onrender.com/graphs/equations/${id}`, {
               headers: { Authorization: `Bearer ${token}` }
           });
           setEquations(equations.filter(eq => eq.id !== id));

@@ -14,7 +14,7 @@ const handleSubmit = async (e) => {
     setSuccess('');
 
     try {
-        const response = await axios.post('http://localhost:5000/signup', {
+        const response = await axios.post('https://graphingcalculator.onrender.com/signup', {
             username,
             password,
         });
